@@ -1,8 +1,7 @@
-import com.github.sebersole.gradle.quarkus.extension.orm.HibernateOrmExtension;
-
 plugins {
-    id("java" )
-    id("sebersole.quarkus.plugin-poc" )
+    `java-library`
+    id( "com.dorongold.task-tree" ) version "1.5"
+    id( "sebersole.quarkus.plugin-poc" ) version "0.2"
 }
 
 group = "org.hibernate.build.gradle"
@@ -28,29 +27,28 @@ dependencies {
 }
 
 quarkus {
-    quarkusVersion = "1.7.1.Final"
+    var quarkusVersion = "1.7.1.Final"
 
     platform( "io.quarkus:quarkus-universe-bom:${quarkusVersion}" )
 
     extensions {
         // specialized creations
 
-        create( "hibernateOrm", HibernateOrmExtension::class ) {
-            databaseFamily = "derby"
+        hibernateOrm {
+            databaseFamily.set( "derby" )
 
             persistenceUnits {
-                create( "abc" )
+                create( "abc" ) {
+                    include( project( ":" ) )
+                }
             }
         }
 
         extension( "custom2" ) {
-            artifact("org.junit.jupiter:junit-jupiter-api:5.3.1" )
+            artifact( "org.junit.jupiter:junit-jupiter-api:5.3.1" )
         }
 
         quarkusExtension( "hibernate-validator" )
     }
 }
-
-// todo : handle this in the plugin
-//tasks.compileJava.get().classpath += quarkus.runtimeDependencies
 
