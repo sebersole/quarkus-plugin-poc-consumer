@@ -27,7 +27,7 @@ dependencies {
 }
 
 quarkus {
-    var quarkusVersion = "1.7.1.Final"
+    val quarkusVersion = "1.7.1.Final"
 
     platform( "io.quarkus:quarkus-universe-bom:${quarkusVersion}" )
 
