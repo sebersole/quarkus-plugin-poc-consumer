@@ -13,10 +13,11 @@ pluginManagement {
 
     resolutionStrategy {
         eachPlugin {
-            if ( requested.id.namespace == "sebersole.quarkus"
-                    && requested.id.name == "plugin-poc" ) {
+            if ( requested.id.namespace == "sebersole.quarkus" && requested.id.name == "plugin-poc-buildscript" ) {
                 if ( requested.version.orEmpty().endsWith("-SNAPSHOT" )) {
-                    useModule("com.github.sebersole:quarkus-gradle-poc-plugin:0.1-SNAPSHOT")
+                    val notation = "com.github.sebersole.quarkus:quarkus-poc-buildscript-ext:${requested.version}"
+                    logger.lifecycle( "Swapping SNAPSHOT version of plugin : {}", notation )
+                    useModule(notation)
                 }
             }
         }

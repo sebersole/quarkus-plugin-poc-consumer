@@ -1,13 +1,37 @@
+buildscript {
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // this part is just for personal plugin SNAPSHOT testing.
+    // generally users would not need this part
+    configurations {
+        classpath {
+            resolutionStrategy {
+                cacheChangingModulesFor(0, java.util.concurrent.TimeUnit.SECONDS )
+            }
+        }
+    }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath( enforcedPlatform( "io.quarkus:quarkus-bom:1.7.1.Final" ) )
+
+        // would be nicer to name the deployment artifact and have a way to map
+        // that to the corresponding runtime artifact.  however, the way this works
+        // in Quarkus at the moment is the other way around.
+        //classpath 'io.quarkus:quarkus-hibernate-orm-deployment'
+        classpath( "io.quarkus:quarkus-hibernate-orm" )
+    }
+}
+
 plugins {
     `java-library`
     id( "com.dorongold.task-tree" ) version "1.5"
-    id( "sebersole.quarkus.plugin-poc" ) version "0.2"
+    id( "sebersole.quarkus.plugin-poc" ) version "0.9"
 }
 
 group = "org.hibernate.build.gradle"
 version = "1.0.0-SNAPSHOT"
-
-val quarkusVersion = "1.7.1.Final"
 
 repositories {
     mavenCentral()
@@ -19,36 +43,21 @@ dependencies {
 
     implementation( "javax.persistence:javax.persistence-api:2.2" )
 
-    // open question whether to auto add this one
-    quarkusPlatforms( enforcedPlatform( "io.quarkus:quarkus-universe-bom:${quarkusVersion}" ) )
-
     testImplementation( "org.junit.jupiter:junit-jupiter-api:${junit5Version}" )
     testRuntimeOnly( "org.junit.jupiter:junit-jupiter-engine:${junit5Version}" )
 }
 
 quarkus {
-    val quarkusVersion = "1.7.1.Final"
+    hibernateOrm {
 
-    platform( "io.quarkus:quarkus-universe-bom:${quarkusVersion}" )
-
-    extensions {
-        // specialized creations
-
-        hibernateOrm {
-            databaseFamily.set( "derby" )
-
-            persistenceUnits {
-                create( "abc" ) {
-                    include( project( ":" ) )
-                }
+    }
+    dataSources {
+        setDatabaseKind( "derby" )
+    }
+    jpa {
+        persistenceUnits {
+            create( "pu-abc" ) {
             }
         }
-
-        extension( "custom2" ) {
-            artifact( "org.junit.jupiter:junit-jupiter-api:5.3.1" )
-        }
-
-        quarkusExtension( "hibernate-validator" )
     }
 }
-
